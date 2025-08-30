@@ -1,6 +1,9 @@
 package errors
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 // Error Codes
 const ProcessFailureError string = "PROCESS_FAILURE_ERROR"
@@ -18,17 +21,23 @@ type BaseError struct {
 	Status  int
 }
 
-func NewInternalServerError() BaseError {
+func handleError(error BaseError, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(error.Status)
+	json.NewEncoder(w).Encode(error)
+}
+
+func NewInternalServerError(w http.ResponseWriter) {
 	err := BaseError{Code: ProcessFailureError, Message: ErrorMessages[ProcessFailureError], Status: http.StatusInternalServerError}
-	return err
+	handleError(err, w)
 }
 
-func NewBusinessRuleError(code string) BaseError {
+func NewBusinessRuleError(code string, w http.ResponseWriter) {
 	err := BaseError{Code: code, Message: ErrorMessages[code], Status: http.StatusUnprocessableEntity}
-	return err
+	handleError(err, w)
 }
 
-func NewAuthorizationError() BaseError {
+func NewAuthorizationError(w http.ResponseWriter) {
 	err := BaseError{Code: AuthorizationError, Message: ErrorMessages[AuthorizationError], Status: http.StatusUnauthorized}
-	return err
+	handleError(err, w)
 }
