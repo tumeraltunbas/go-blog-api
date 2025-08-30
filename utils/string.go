@@ -1,10 +1,12 @@
 package utils
 
 import (
-	"os"
+	"strconv"
+
+	"github.com/tumeraltunbas/go-blog/config"
 )
 
 func GetPort() string {
-	port := os.Getenv("PORT")
-	return ":" + port
+	config := config.Get()
+	return ":" + strconv.Itoa(config.Port)
 }

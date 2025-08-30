@@ -1,21 +1,26 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
-	"github.com/tumeraltunbas/go-blog/constants/errors"
+	"github.com/tumeraltunbas/go-blog/config"
+	"github.com/tumeraltunbas/go-blog/routes"
 	"github.com/tumeraltunbas/go-blog/utils"
 )
 
 func main() {
-	err := godotenv.Load()
-
-	if err != nil {
+	if err := godotenv.Load(); err != nil {
 		log.Fatalln(err)
-		panic(errors.NewInternalServerError())
+		panic(err)
 	}
 
-	http.ListenAndServe(utils.GetPort(), nil)
+	router := chi.NewRouter()
+	router.Mount("/api", routes.IndexRouter())
+
+	fmt.Println(config.Get().Port)
+	http.ListenAndServe(utils.GetPort(), router)
 }
