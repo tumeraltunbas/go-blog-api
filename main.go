@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/tumeraltunbas/go-blog/config"
+	"github.com/tumeraltunbas/go-blog/database"
 	"github.com/tumeraltunbas/go-blog/routes"
 	"github.com/tumeraltunbas/go-blog/utils"
 )
@@ -15,12 +15,15 @@ import (
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatalln(err)
-		panic(err)
 	}
+
+	databaseConfig := config.Get().Database
+
+	pool := database.Connect(databaseConfig.DbConnectionString, databaseConfig.DbConnectionTimeout)
+	defer pool.Close()
 
 	router := chi.NewRouter()
 	router.Mount("/api", routes.IndexRouter())
 
-	fmt.Println(config.Get().Port)
 	http.ListenAndServe(utils.GetPort(), router)
 }
