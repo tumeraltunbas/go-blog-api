@@ -7,10 +7,10 @@ import (
 	"github.com/tumeraltunbas/go-blog/handlers"
 )
 
-func AuthRouter() http.Handler {
+func AuthRouter(userHandler *handlers.UserHandler) http.Handler {
 	router := chi.NewRouter()
 
-	router.Post("/login", handlers.Login)
+	router.Post("/register", userHandler.Register)
 
 	return router
 }

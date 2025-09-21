@@ -8,11 +8,13 @@ import (
 // Error Codes
 const ProcessFailureError string = "PROCESS_FAILURE_ERROR"
 const AuthorizationError string = "AUTHORIZATION_ERROR"
+const UserNotFound string = "USER_NOT_FOUND"
 
 // Error Messages
 var ErrorMessages = map[string]string{
 	ProcessFailureError: "Proceess failure error.",
 	AuthorizationError:  "Authorization error.",
+	UserNotFound:        "User not found.",
 }
 
 type BaseError struct {
