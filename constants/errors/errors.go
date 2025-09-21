@@ -8,11 +8,14 @@ import (
 // Error Codes
 const ProcessFailureError string = "PROCESS_FAILURE_ERROR"
 const AuthorizationError string = "AUTHORIZATION_ERROR"
+const UserAlreadyExist string = "USER_ALREADY_EXIST"
+const ValidationError string = "VALIDATION_ERROR"
 
 // Error Messages
 var ErrorMessages = map[string]string{
 	ProcessFailureError: "Proceess failure error.",
 	AuthorizationError:  "Authorization error.",
+	UserAlreadyExist:    "User already exist.",
 }
 
 type BaseError struct {
@@ -21,10 +24,15 @@ type BaseError struct {
 	Status  int
 }
 
-func handleError(error BaseError, w http.ResponseWriter) {
+func handleError(baseError BaseError, w http.ResponseWriter) {
+	errorObject := map[string]string{
+		"Code":    baseError.Code,
+		"Message": baseError.Message,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(error.Status)
-	json.NewEncoder(w).Encode(error)
+	w.WriteHeader(baseError.Status)
+	json.NewEncoder(w).Encode(errorObject)
 }
 
 func NewInternalServerError(w http.ResponseWriter) {
@@ -39,5 +47,10 @@ func NewBusinessRuleError(code string, w http.ResponseWriter) {
 
 func NewAuthorizationError(w http.ResponseWriter) {
 	err := BaseError{Code: AuthorizationError, Message: ErrorMessages[AuthorizationError], Status: http.StatusUnauthorized}
+	handleError(err, w)
+}
+
+func NewValidationError(w http.ResponseWriter, data error) {
+	err := BaseError{Code: ValidationError, Message: data.Error(), Status: http.StatusBadRequest}
 	handleError(err, w)
 }

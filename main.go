@@ -23,7 +23,7 @@ func main() {
 	defer pool.Close()
 
 	router := chi.NewRouter()
-	router.Mount("/api", routes.IndexRouter())
+	router.Mount("/api", routes.IndexRouter(pool))
 
 	http.ListenAndServe(utils.GetPort(), router)
 }
